@@ -111,7 +111,7 @@
 		[df setDateStyle:NSDateFormatterMediumStyle];
 		[df setTimeStyle:NSDateFormatterNoStyle];
 	}
-	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [issue objectForKey:@"id"], (overdue ? @" overdue": @"")];
+	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [issue objectForKey:@"priority_id"], (overdue ? @" overdue" : @"")];
 	[html appendFormat:@"<div class=\"project\">%@</div>", [issue objectForKey:@"project"]];
 	[html appendFormat:@"<div class=\"summary\"><a href=\"%@issues/%@\">%@</a></div>", [self baseUrl], [issue objectForKey:@"id"], [issue objectForKey:@"subject"]];
 	if ([issue objectForKey:@"due_date"]) {
@@ -124,7 +124,7 @@
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSMutableString *html = [[NSMutableString alloc] init];
 	
-	[html appendString:@"<html><head></head><body>"];
+	[html appendString:@"<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/></head><body>"];
 	
 	NSDictionary *projects = [self projectsById];
 	NSArray *assignedToMe = [self loadRedminePath:@"issues.json?assigned_to_id=me&limit=100"];
@@ -171,14 +171,14 @@
 						foundSpot = YES;
 						break;
 					}
-				} else if ([[newIssue objectForKey:@"priority_id"] compare:[otherIssue:@"priority_id"]] == NSOrderedDescending) {
+				} else if ([[newIssue objectForKey:@"priority_id"] compare:[otherIssue objectForKey:@"priority_id"]] == NSOrderedDescending) {
 					[theRest insertObject:newIssue atIndex:i];
 					foundSpot = YES;
 					break;
 				}
 			}
 			if (!foundSpot) {
-				[overdue addObject:newIssue];
+				[theRest addObject:newIssue];
 			}
 		}
 	}
@@ -211,8 +211,9 @@
 }
 
 - (void)loadHtml:(NSString *)html {
+	//NSLog(@"%@", html);
 	WebFrame *frame = [webView mainFrame];
-	[frame loadHTMLString:html baseURL:nil];
+	[frame loadHTMLString:html baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"style" ofType:@"css"]]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {

@@ -1,0 +1,47 @@
+body {
+	width: 100%;
+	margin: 0;
+}
+
+.issue {
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(1.0, rgb(80,80,80)),
+	    color-stop(0.0, rgb(255,255,255))
+	);
+	padding: 5px;
+	height: 40px;
+	overflow: hidden;
+}
+
+.overdue {
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(1.0, rgb(128,0,0)),
+	    color-stop(0.0, rgb(255,80,80))
+	);
+	color: #FFF;
+	padding: 5px;
+}
+
+.project {
+	display: inline-block;
+	color: #444;
+	padding-right: 10px;
+}
+
+.summary {
+	display: inline-block;
+}
+
+.overdue a {
+	color: #FFF;
+}
+
+a {
+	color: #000;
+}

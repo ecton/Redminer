@@ -19,6 +19,7 @@
 		EA5C037E1339531400D2E270 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA5C037D1339531400D2E270 /* Security.framework */; };
 		EA5C03C513395A8100D2E270 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA5C03C413395A8100D2E270 /* Growl.framework */; };
 		EA5C03E9133961B200D2E270 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = EA5C03C413395A8100D2E270 /* Growl.framework */; };
+		EAB809DE1339A55E0073B347 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = EAB809DD1339A55E0073B347 /* style.css */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,6 +58,7 @@
 		EA5C036113394ED500D2E270 /* CCJSONWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCJSONWriter.m; path = lib/CCJSON/CCJSONWriter.m; sourceTree = "<group>"; };
 		EA5C037D1339531400D2E270 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		EA5C03C413395A8100D2E270 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
+		EAB809DD1339A55E0073B347 /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				EAB809DD1339A55E0073B347 /* style.css */,
 				8D1107310486CEB800E47090 /* Redminer-Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
@@ -237,6 +240,7 @@
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+				EAB809DE1339A55E0073B347 /* style.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
