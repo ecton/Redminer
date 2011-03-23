@@ -22,6 +22,14 @@
 
 @synthesize preferencesWindow, redmineUrlField, usernameField, passwordField, 
 	updateFrequencyBtn, notifyWithGrowlBtn;
+
+- (NSString *)baseUrl {
+	NSString *baseUrl = [[NSUserDefaults standardUserDefaults] stringForKey:REDMINE_URL_KEY];
+	if ([baseUrl length] && [baseUrl characterAtIndex:[baseUrl length] - 1] != '/') {
+		baseUrl = [baseUrl stringByAppendingString:@"/"];
+	}
+	return baseUrl;
+}
 	
 - (id)loadRedminePath:(NSString *)path withUsername:(NSString *)username andPassword:(NSString *)password {
 	NSString *baseUrl = [[NSUserDefaults standardUserDefaults] stringForKey:REDMINE_URL_KEY];
@@ -52,7 +60,6 @@
 }
 	
 - (id)loadRedminePath:(NSString *)path {
-	
 	NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:REDMINE_USERNAME_KEY];
 	
 	void *password = NULL;
@@ -71,14 +78,122 @@
 	return nil;
 }
 
+- (NSDictionary *)projectsById {
+	NSXMLDocument *doc = [self loadRedminePath:@"projects.xml"];
+	if (!doc) return nil;
+	
+	NSXMLElement *root = [doc rootElement];
+	NSMutableDictionary *projects = [NSMutableDictionary dictionary];
+	for (NSXMLElement *project in [root children]) {
+		if (![[project name] isEqualToString:@"project"]) continue;
+		NSMutableDictionary *proj = [NSMutableDictionary dictionary];
+		NSString *projId = nil;
+		for (NSXMLElement *elem in [project children]) {
+			if ([[elem name] isEqualToString:@"id"]) {
+				projId = [elem stringValue];
+			} else if ([[elem name] isEqualToString:@"parent"]) {
+				[proj setObject:[[elem attributeForName:@"id"] stringValue] forKey:@"parentId"];
+			} else {
+				[proj setObject:[elem stringValue] forKey:[elem name]];
+			}
+		}
+		[projects setObject:proj forKey:projId];
+	}
+	return projects;
+}
+
+- (void)appendHtmlTo:(NSMutableString *)html forIssue:(NSDictionary *)issue isOverdue:(BOOL)overdue {
+	static NSDateFormatter *df;
+	if (!df) {
+		df = [[NSDateFormatter alloc] init];
+		[df setDateStyle:NSDateFormatterMediumStyle];
+		[df setTimeStyle:NSDateFormatterNoStyle];
+	}
+	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [issue objectForKey:@"id"], (overdue ? @" overdue": @"")];
+	[html appendFormat:@"<div class=\"project\">%@</div>", [issue objectForKey:@"project"]];
+	[html appendFormat:@"<div class=\"summary\"><a href=\"%@issues/%@\">%@</a></div>", [self baseUrl], [issue objectForKey:@"id"], [issue objectForKey:@"subject"]];
+	if ([issue objectForKey:@"due_date"]) {
+		[html appendFormat:@"<div class=\"due\">%@</div>", [df stringFromDate:[issue objectForKey:@"due_date"]]];
+	}
+	[html appendString:@"</div>"];
+}
+
 - (void)reloadDataInBg {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSMutableString *html = [[NSMutableString alloc] init];
 	
-	NSDictionary *assignedToMe = [self loadRedminePath:@"issues.json?assigned_to=me&limit=100"];
+	[html appendString:@"<html><head></head><body>"];
 	
-	[html appendFormat:@"<pre>%@</pre>", assignedToMe];
-
+	NSDictionary *projects = [self projectsById];
+	NSArray *assignedToMe = [self loadRedminePath:@"issues.json?assigned_to_id=me&limit=100"];
+	
+	NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
+	[df setDateFormat:@"yyyy/MM/dd"];
+	[df setDefaultDate:[NSDate dateWithTimeIntervalSince1970:0]];
+	[df setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+	
+	NSMutableArray *overdue = [NSMutableArray array];
+	NSMutableArray *theRest = [NSMutableArray array];
+	
+	for (NSDictionary *issue in assignedToMe) {
+		NSMutableDictionary *newIssue = [NSMutableDictionary dictionaryWithDictionary:issue];
+		if ([newIssue objectForKey:@"due_date"]) {
+			NSDate *dt = [df dateFromString:[issue objectForKey:@"due_date"]];
+			[newIssue setObject:dt forKey:@"due_date"];
+		}
+		
+		[newIssue setObject:[[projects objectForKey:[[newIssue objectForKey:@"project_id"] stringValue]] objectForKey:@"name"] forKey:@"project"];
+		
+		if ([newIssue objectForKey:@"due_date"] && [[NSDate date] compare:[newIssue objectForKey:@"due_date"]] == NSOrderedDescending) {
+			// Find the spot to put it in the overdue array -- make the most overdue float to the top
+			BOOL foundSpot = NO;
+			for (int i = 0; i < [overdue count]; i++) {
+				NSDictionary *otherIssue = [overdue objectAtIndex:i];
+				if ([[otherIssue objectForKey:@"due_date"] compare:[newIssue objectForKey:@"due_date"]] == NSOrderedDescending) {
+					[overdue insertObject:newIssue atIndex:i];
+					foundSpot = YES;
+					break;
+				}
+			}
+			if (!foundSpot) {
+				[overdue addObject:newIssue];
+			}
+		} else {
+			// Find the spot into the other array. First, sort by due date, then sort by priority id
+			BOOL foundSpot = NO;
+			for (int i = 0; i < [theRest count]; i++) {
+				NSDictionary *otherIssue = [theRest objectAtIndex:i];
+				if ([newIssue objectForKey:@"due_date"]) {
+					if (![otherIssue objectForKey:@"due_date"] || [[otherIssue objectForKey:@"due_date"] compare:[newIssue objectForKey:@"due_date"]] == NSOrderedDescending) {
+						[theRest insertObject:newIssue atIndex:i];
+						foundSpot = YES;
+						break;
+					}
+				} else if ([[newIssue objectForKey:@"priority_id"] compare:[otherIssue:@"priority_id"]] == NSOrderedDescending) {
+					[theRest insertObject:newIssue atIndex:i];
+					foundSpot = YES;
+					break;
+				}
+			}
+			if (!foundSpot) {
+				[overdue addObject:newIssue];
+			}
+		}
+	}
+	
+	for (NSDictionary *issue in overdue) {
+		[self appendHtmlTo:html forIssue:issue isOverdue:YES];
+	}
+	
+	for (NSDictionary *issue in theRest) {
+		[self appendHtmlTo:html forIssue:issue isOverdue:NO];
+	}
+	
+	
+	[html appendString:@"</body></html>"];
+	
+	
+	
 	[self performSelectorOnMainThread:@selector(loadHtml:) withObject:html waitUntilDone:YES];
 	[html release];
 	
@@ -97,7 +212,20 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	[redmineUrlField setObjectValue:[[NSUserDefaults standardUserDefaults] stringForKey:REDMINE_URL_KEY]];
 	[usernameField setObjectValue:[[NSUserDefaults standardUserDefaults] stringForKey:REDMINE_USERNAME_KEY]];
+	[webView setPolicyDelegate:self];
 	[self reloadData];
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation
+                                                           request:(NSURLRequest *)request
+                                                             frame:(WebFrame *)frame
+                                                  decisionListener:(id<WebPolicyDecisionListener>)listener {
+	if ([[actionInformation objectForKey:WebActionNavigationTypeKey] intValue] == WebNavigationTypeLinkClicked) {
+		[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+		[listener ignore];
+	} else {
+		[listener use];
+	}
 }
 
 - (IBAction)showPreferences:(id)sender {
