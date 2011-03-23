@@ -111,8 +111,8 @@
 		[df setDateStyle:NSDateFormatterMediumStyle];
 		[df setTimeStyle:NSDateFormatterNoStyle];
 	}
-	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [issue objectForKey:@"priority_id"], (overdue ? @" overdue" : @"")];
-	[html appendFormat:@"<div class=\"project\">%@</div>", [issue objectForKey:@"project"]];
+	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [[issue objectForKey:@"priority"] objectForKey:@"id"], (overdue ? @" overdue" : @"")];
+	[html appendFormat:@"<div class=\"project\">%@</div>", [[issue objectForKey:@"project"] objectForKey:@"name"]];
 	[html appendFormat:@"<div class=\"summary\"><a href=\"%@issues/%@\">%@</a></div>", [self baseUrl], [issue objectForKey:@"id"], [issue objectForKey:@"subject"]];
 	if ([issue objectForKey:@"due_date"]) {
 		[html appendFormat:@"<div class=\"due\">%@</div>", [df stringFromDate:[issue objectForKey:@"due_date"]]];
@@ -127,7 +127,7 @@
 	[html appendString:@"<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/></head><body>"];
 	
 	NSDictionary *projects = [self projectsById];
-	NSArray *assignedToMe = [self loadRedminePath:@"issues.json?assigned_to_id=me&limit=100"];
+	NSDictionary *assignedToMe = [self loadRedminePath:@"issues.json?assigned_to_id=me&limit=100"];
 	
 	NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
 	[df setDateFormat:@"yyyy/MM/dd"];
@@ -137,14 +137,13 @@
 	NSMutableArray *overdue = [NSMutableArray array];
 	NSMutableArray *theRest = [NSMutableArray array];
 	
-	for (NSDictionary *issue in assignedToMe) {
+	for (NSDictionary *issue in [assignedToMe objectForKey:@"issues"]) {
 		NSMutableDictionary *newIssue = [NSMutableDictionary dictionaryWithDictionary:issue];
 		if ([newIssue objectForKey:@"due_date"]) {
 			NSDate *dt = [df dateFromString:[issue objectForKey:@"due_date"]];
 			[newIssue setObject:dt forKey:@"due_date"];
 		}
-		
-		[newIssue setObject:[[projects objectForKey:[[newIssue objectForKey:@"project_id"] stringValue]] objectForKey:@"name"] forKey:@"project"];
+	
 		
 		if ([newIssue objectForKey:@"due_date"] && [[NSDate date] compare:[newIssue objectForKey:@"due_date"]] == NSOrderedDescending) {
 			// Find the spot to put it in the overdue array -- make the most overdue float to the top
@@ -171,7 +170,7 @@
 						foundSpot = YES;
 						break;
 					}
-				} else if ([[newIssue objectForKey:@"priority_id"] compare:[otherIssue objectForKey:@"priority_id"]] == NSOrderedDescending) {
+				} else if ([[[newIssue objectForKey:@"priority"] objectForKey:@"id"] compare:[[otherIssue objectForKey:@"priority"] objectForKey:@"id"]] == NSOrderedDescending) {
 					[theRest insertObject:newIssue atIndex:i];
 					foundSpot = YES;
 					break;
