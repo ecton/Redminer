@@ -9,10 +9,12 @@
 #import "RedminerAppDelegate.h"
 #import "CCJSON.h"
 #import "NSData+Base64.h"
+#import <Growl/Growl.h>
 #import <Security/Security.h>
 
 #define REDMINE_URL_KEY @"redmineUrl"
 #define REDMINE_USERNAME_KEY @"redmineUsername"
+#define UPDATE_FREQUENCY_KEY @"updateFrequency"
 
 #define KEYCHAIN_SERVICE_NAME "Redminer Redmine Password"
 
@@ -202,6 +204,10 @@
 
 - (void)reloadData {
 	[NSThread detachNewThreadSelector:@selector(reloadDataInBg) toTarget:self withObject:nil];
+	
+	int waitPeriod = [[NSUserDefaults standardUserDefaults] integerForKey:UPDATE_FREQUENCY_KEY];
+	if (waitPeriod <= 0) waitPeriod = 1;
+	[NSTimer scheduledTimerWithTimeInterval:waitPeriod * 60 target:self selector:@selector(reloadData) userInfo:nil repeats:NO];
 }
 
 - (void)loadHtml:(NSString *)html {
@@ -274,7 +280,9 @@
 }
 
 - (IBAction)updateFrequencyChanged:(id)sender {
-
+	int minutes = [updateFrequencyBtn selectedTag];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:minutes] forKey:UPDATE_FREQUENCY_KEY];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (IBAction)notifyWithGrowlChanged:(id)sender {
