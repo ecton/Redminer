@@ -12,7 +12,27 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		EA5C033713394A9900D2E270 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA5C033613394A9900D2E270 /* WebKit.framework */; };
+		EA5C035713394EC600D2E270 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = EA5C035613394EC600D2E270 /* NSData+Base64.m */; };
+		EA5C036213394ED500D2E270 /* CCJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = EA5C035F13394ED500D2E270 /* CCJSONParser.m */; };
+		EA5C036313394ED500D2E270 /* CCJSONWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = EA5C036113394ED500D2E270 /* CCJSONWriter.m */; };
+		EA5C037E1339531400D2E270 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA5C037D1339531400D2E270 /* Security.framework */; };
+		EA5C03C513395A8100D2E270 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA5C03C413395A8100D2E270 /* Growl.framework */; };
+		EA5C03E9133961B200D2E270 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = EA5C03C413395A8100D2E270 /* Growl.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EA5C040A1339621600D2E270 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				EA5C03E9133961B200D2E270 /* Growl.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -27,6 +47,16 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Redminer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Redminer-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Redminer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Redminer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA5C033613394A9900D2E270 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		EA5C035513394EC600D2E270 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		EA5C035613394EC600D2E270 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		EA5C035D13394ED500D2E270 /* CCJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCJSON.h; path = lib/CCJSON/CCJSON.h; sourceTree = "<group>"; };
+		EA5C035E13394ED500D2E270 /* CCJSONParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCJSONParser.h; path = lib/CCJSON/CCJSONParser.h; sourceTree = "<group>"; };
+		EA5C035F13394ED500D2E270 /* CCJSONParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCJSONParser.m; path = lib/CCJSON/CCJSONParser.m; sourceTree = "<group>"; };
+		EA5C036013394ED500D2E270 /* CCJSONWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCJSONWriter.h; path = lib/CCJSON/CCJSONWriter.h; sourceTree = "<group>"; };
+		EA5C036113394ED500D2E270 /* CCJSONWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCJSONWriter.m; path = lib/CCJSON/CCJSONWriter.m; sourceTree = "<group>"; };
+		EA5C037D1339531400D2E270 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		EA5C03C413395A8100D2E270 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +65,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				EA5C033713394A9900D2E270 /* WebKit.framework in Frameworks */,
+				EA5C037E1339531400D2E270 /* Security.framework in Frameworks */,
+				EA5C03C513395A8100D2E270 /* Growl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +77,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				EA5C033D13394EBF00D2E270 /* lib */,
 				256AC3D80F4B6AC300CF3369 /* RedminerAppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* RedminerAppDelegate.m */,
 			);
@@ -54,6 +88,8 @@
 			isa = PBXGroup;
 			children = (
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				EA5C033613394A9900D2E270 /* WebKit.framework */,
+				EA5C037D1339531400D2E270 /* Security.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -116,6 +152,38 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		EA5C033D13394EBF00D2E270 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				EA5C03C413395A8100D2E270 /* Growl.framework */,
+				EA5C035813394ECE00D2E270 /* CCJSON */,
+				EA5C035413394EC600D2E270 /* NSData+Base64 */,
+			);
+			name = lib;
+			sourceTree = "<group>";
+		};
+		EA5C035413394EC600D2E270 /* NSData+Base64 */ = {
+			isa = PBXGroup;
+			children = (
+				EA5C035513394EC600D2E270 /* NSData+Base64.h */,
+				EA5C035613394EC600D2E270 /* NSData+Base64.m */,
+			);
+			name = "NSData+Base64";
+			path = "lib/NSData+Base64";
+			sourceTree = "<group>";
+		};
+		EA5C035813394ECE00D2E270 /* CCJSON */ = {
+			isa = PBXGroup;
+			children = (
+				EA5C035D13394ED500D2E270 /* CCJSON.h */,
+				EA5C035E13394ED500D2E270 /* CCJSONParser.h */,
+				EA5C035F13394ED500D2E270 /* CCJSONParser.m */,
+				EA5C036013394ED500D2E270 /* CCJSONWriter.h */,
+				EA5C036113394ED500D2E270 /* CCJSONWriter.m */,
+			);
+			name = CCJSON;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,6 +194,7 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				EA5C040A1339621600D2E270 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -180,6 +249,9 @@
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* RedminerAppDelegate.m in Sources */,
+				EA5C035713394EC600D2E270 /* NSData+Base64.m in Sources */,
+				EA5C036213394ED500D2E270 /* CCJSONParser.m in Sources */,
+				EA5C036313394ED500D2E270 /* CCJSONWriter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +282,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -227,6 +303,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Redminer_Prefix.pch;
