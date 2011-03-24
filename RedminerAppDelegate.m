@@ -126,8 +126,18 @@
 	
 	[html appendString:@"<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/></head><body>"];
 	
-	NSDictionary *projects = [self projectsById];
-	NSDictionary *assignedToMe = [self loadRedminePath:@"issues.json?assigned_to_id=me&limit=100"];
+	int offset = 0;
+	NSMutableArray *assignedToMe = [NSMutableArray array];
+	while (1) {
+		NSDictionary *results = [self loadRedminePath:[NSString stringWithFormat:@"issues.json?assigned_to_id=me&offset=%i&limit=100", offset]];
+		if ([results objectForKey:@"issues"]) {
+			int count = [[results objectForKey:@"issues"] count];
+			[assignedToMe addObjectsFromArray:[results objectForKey:@"issues"]];
+			if (count < 100) break;
+			offset += count;
+		}
+		if (!results) break;
+	}
 	
 	NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
 	[df setDateFormat:@"yyyy/MM/dd"];
@@ -137,7 +147,7 @@
 	NSMutableArray *overdue = [NSMutableArray array];
 	NSMutableArray *theRest = [NSMutableArray array];
 	
-	for (NSDictionary *issue in [assignedToMe objectForKey:@"issues"]) {
+	for (NSDictionary *issue in assignedToMe) {
 		NSMutableDictionary *newIssue = [NSMutableDictionary dictionaryWithDictionary:issue];
 		if ([newIssue objectForKey:@"due_date"]) {
 			NSDate *dt = [df dateFromString:[issue objectForKey:@"due_date"]];
@@ -170,7 +180,7 @@
 						foundSpot = YES;
 						break;
 					}
-				} else if ([[[newIssue objectForKey:@"priority"] objectForKey:@"id"] compare:[[otherIssue objectForKey:@"priority"] objectForKey:@"id"]] == NSOrderedDescending) {
+				} else if (![otherIssue objectForKey:@"due_date"] && [[[newIssue objectForKey:@"priority"] objectForKey:@"id"] compare:[[otherIssue objectForKey:@"priority"] objectForKey:@"id"]] == NSOrderedDescending) {
 					[theRest insertObject:newIssue atIndex:i];
 					foundSpot = YES;
 					break;
@@ -191,7 +201,7 @@
 	}
 	
 	
-	[html appendString:@"</body></html>"];
+	[html appendString:@"<script type=\"text/javascript\">window.scrollTo(0,SCROLLY)</script></body></html>"];
 	
 	
 	
@@ -212,7 +222,8 @@
 - (void)loadHtml:(NSString *)html {
 	//NSLog(@"%@", html);
 	WebFrame *frame = [webView mainFrame];
-	[frame loadHTMLString:html baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"style" ofType:@"css"]]];
+	NSString *scrollY = [webView stringByEvaluatingJavaScriptFromString:@"scrollY"];
+	[frame loadHTMLString:[html stringByReplacingOccurrencesOfString:@"SCROLLY" withString:scrollY] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"style" ofType:@"css"]]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
