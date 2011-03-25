@@ -8,7 +8,7 @@ body {
 	    linear,
 	    left bottom,
 	    left top,
-	    color-stop(1.0, rgb(80,80,80)),
+	    color-stop(1.0, rgb(160,160,160)),
 	    color-stop(0.0, rgb(255,255,255))
 	);
 	padding: 5px;
@@ -21,16 +21,39 @@ body {
 	    linear,
 	    left bottom,
 	    left top,
-	    color-stop(1.0, rgb(128,0,0)),
+	    color-stop(1.0, rgb(160,00,00)),
 	    color-stop(0.0, rgb(255,80,80))
 	);
+	font-weight: bold;
 	color: #FFF;
 	padding: 5px;
 }
 
+.priority-immediate {
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(1.0, rgb(160,140,40)),
+	    color-stop(0.0, rgb(255,240,80))
+	);
+	color: #FFF;
+}
+
+.priority-urgent {
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(1.0, rgb(160,35,00)),
+	    color-stop(0.0, rgb(255,70,0))
+	);
+	color: #FFF;
+}
+
 .project {
 	display: inline-block;
-	color: #444;
+	opacity: 0.5;
 	padding-right: 10px;
 }
 

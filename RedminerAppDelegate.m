@@ -111,7 +111,7 @@
 		[df setDateStyle:NSDateFormatterMediumStyle];
 		[df setTimeStyle:NSDateFormatterNoStyle];
 	}
-	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [[issue objectForKey:@"priority"] objectForKey:@"id"], (overdue ? @" overdue" : @"")];
+	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [[[issue objectForKey:@"priority"] objectForKey:@"name"] lowercaseString], (overdue ? @" overdue" : @"")];
 	[html appendFormat:@"<div class=\"project\">%@</div>", [[issue objectForKey:@"project"] objectForKey:@"name"]];
 	[html appendFormat:@"<div class=\"summary\"><a href=\"%@issues/%@\">%@</a></div>", [self baseUrl], [issue objectForKey:@"id"], [issue objectForKey:@"subject"]];
 	if ([issue objectForKey:@"due_date"]) {
@@ -120,16 +120,57 @@
 	[html appendString:@"</div>"];
 }
 
+- (void)userChanged:(id)sender {
+	NSLog(@"User changed.");
+	[self reloadData];
+}
+
 - (void)reloadDataInBg {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSMutableString *html = [[NSMutableString alloc] init];
+	
+	NSToolbar *toolbar = [window toolbar];
+	NSString *selectedUser = @"me";
+	NSDictionary *users = [self loadRedminePath:@"users.json"];
+	for (NSToolbarItem *item in [toolbar items]) {
+		if ([[item itemIdentifier] isEqualToString:@"user"]) {
+			NSPopUpButton *btn = (NSPopUpButton *)[item view];
+			[btn setAction:@selector(userChanged:)];
+			[btn setTarget:self];
+			
+			int currentTag = [btn selectedTag];
+			if (currentTag < 0) {
+				selectedUser = @"me";
+			} else {
+				selectedUser = [NSString stringWithFormat:@"%i", currentTag];
+			}
+			
+			// Build the current menu
+			NSMenu *menu = [[[NSMenu alloc] init] autorelease];
+			NSMenuItem *item = [menu addItemWithTitle:@"<<Me>>" action:nil keyEquivalent:@""];
+			[item setTag:-1];
+			
+			for (NSDictionary *user in [users objectForKey:@"users"]) {
+				NSMenuItem *item = [menu addItemWithTitle:
+						[NSString stringWithFormat:@"%@ %@", 
+							[user objectForKey:@"firstname"], 
+							[user objectForKey:@"lastname"]] 
+						action:nil keyEquivalent:@""];
+				[item setTag:[[user objectForKey:@"id"] intValue]];
+			}
+			
+			[btn setMenu:menu];
+			[btn selectItemWithTag:currentTag];
+			break;
+		}
+	}
 	
 	[html appendString:@"<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/></head><body>"];
 	
 	int offset = 0;
 	NSMutableArray *assignedToMe = [NSMutableArray array];
 	while (1) {
-		NSDictionary *results = [self loadRedminePath:[NSString stringWithFormat:@"issues.json?assigned_to_id=me&offset=%i&limit=100", offset]];
+		NSDictionary *results = [self loadRedminePath:[NSString stringWithFormat:@"issues.json?assigned_to_id=%@&offset=%i&limit=100", selectedUser, offset]];
 		if ([results objectForKey:@"issues"]) {
 			int count = [[results objectForKey:@"issues"] count];
 			[assignedToMe addObjectsFromArray:[results objectForKey:@"issues"]];
