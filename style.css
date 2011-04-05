@@ -27,6 +27,11 @@ body {
 	font-weight: bold;
 	color: #FFF;
 	padding: 5px;
+	font-variant: small-caps;
+}
+
+.resolved .summary a {
+	text-decoration: line-through;
 }
 
 .priority-immediate {

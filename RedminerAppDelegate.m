@@ -35,6 +35,7 @@
 	
 - (id)loadRedminePath:(NSString *)path withUsername:(NSString *)username andPassword:(NSString *)password {
 	NSString *baseUrl = [[NSUserDefaults standardUserDefaults] stringForKey:REDMINE_URL_KEY];
+	if (!baseUrl) return nil;
 	if ([baseUrl length] && [baseUrl characterAtIndex:[baseUrl length] - 1] != '/') {
 		baseUrl = [baseUrl stringByAppendingString:@"/"];
 	}
@@ -111,7 +112,10 @@
 		[df setDateStyle:NSDateFormatterMediumStyle];
 		[df setTimeStyle:NSDateFormatterNoStyle];
 	}
-	[html appendFormat:@"<div class=\"issue priority-%@%@\">", [[[issue objectForKey:@"priority"] objectForKey:@"name"] lowercaseString], (overdue ? @" overdue" : @"")];
+	[html appendFormat:@"<div class=\"issue priority-%@%@ %@\">", 
+		[[[issue objectForKey:@"priority"] objectForKey:@"name"] lowercaseString], 
+		(overdue ? @" overdue" : @""), 
+		[[[issue objectForKey:@"status"] objectForKey:@"name"] lowercaseString]];
 	[html appendFormat:@"<div class=\"project\">%@</div>", [[issue objectForKey:@"project"] objectForKey:@"name"]];
 	[html appendFormat:@"<div class=\"summary\"><a href=\"%@issues/%@\">%@</a></div>", [self baseUrl], [issue objectForKey:@"id"], [issue objectForKey:@"subject"]];
 	if ([issue objectForKey:@"due_date"]) {
@@ -233,6 +237,12 @@
 		}
 	}
 	
+	if ([overdue count]) {
+		[[[NSApplication sharedApplication] dockTile] setBadgeLabel:[NSString stringWithFormat:@"%i", [overdue count]]];
+		[[[NSApplication sharedApplication] dockTile] setShowsApplicationBadge:YES];
+	} else {
+		[[[NSApplication sharedApplication] dockTile] setShowsApplicationBadge:NO];
+	}
 	for (NSDictionary *issue in overdue) {
 		[self appendHtmlTo:html forIssue:issue isOverdue:YES];
 	}
